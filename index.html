@@ -1,0 +1,82 @@
+<html>
+	<head>
+		<script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+		<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
+
+		</head>
+	<body>
+
+	<h1>Plant Book</h1>
+
+	<h2>My Plants</h2>
+	<table id="plantList" style="border: 1px #ccc solid; width: 50%; text-align: left;">
+		<thead>
+			<th>Family</th>
+			<th>Subtype</th>
+		</thead>
+
+	</table>
+
+	<br><br>
+
+	<h2>Add a Plant</h2>
+	<form>
+		<input id="plantFamily" type="text" placeholder="Family">
+		<input id="plantSubtype" type="text" placeholder="Subtype">
+		<button id="plantSubmit" type="button">Submit</button>
+	</form>
+
+	<script>
+		var myFirebaseRef = new Firebase('https://sweltering-torch-1220.firebaseio.com/');
+
+		// REGISTER DOM ELEMENTS
+		var plantList = $('#plantList');						
+		var fieldFamily = $('#plantFamily');
+		var fieldSubtype = $('#plantSubtype');
+		var submitButton = $('#plantSubmit');
+		
+		submitButton.on('click', function(){
+
+			var field = $('input').val().length;
+
+		    if (field  === 0) {
+		        alert('A field is empty');
+		        return false;
+		    }			
+
+			console.log("Clicked");
+
+			// FIELD VALUES
+			var valueFamily = fieldFamily.val();
+			var valueSubtype = fieldSubtype.val();
+
+			// SAVE DATA TO FIREBASE
+			myFirebaseRef.push({
+				family: valueFamily,
+				subtype: valueSubtype
+			});
+
+			// EMPTY FIELDS
+			fieldFamily.val('');
+			fieldSubtype.val('');			
+		});
+
+		myFirebaseRef.on('child_added', function(snapshot) {
+			// GET DATA
+			var data = snapshot.val();
+			var fieldFamily = data.family;
+			var fieldSubtype = data.subtype;
+
+			// CREATE HTML
+			var plantElement = $('<p />');
+			plantElement.text(fieldFamily).prepend(fieldSubtype);
+
+			// ADD PLANT
+			plantList.append(plantElement);
+		});
+
+
+	</script>	
+		
+	</body>
+</html>
